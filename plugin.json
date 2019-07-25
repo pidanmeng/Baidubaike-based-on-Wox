@@ -1,0 +1,12 @@
+{
+    "ID":"e9a63524ae8611e9a2a32a2ae2dbcce4",
+    "ActionKeyword":"wiki",
+    "Name":"BaiduBaike",
+    "Description":"Baidu Baike",
+    "Author":"PidanMoe",
+    "Version":"1.0.0",
+    "Language":"python",
+    "Website":"localhost",
+    "IcoPath":".\\Images\\app.ico",
+    "ExecuteFileName":"main.py"
+}
