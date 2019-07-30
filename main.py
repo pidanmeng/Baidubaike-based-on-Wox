@@ -22,12 +22,7 @@ class Main(Wox):
             results.append({
                 "Title": '请输入关键字',
                 "SubTitle": '百度一下，你就知道',
-                "IcoPath": "Images/app.ico",
-                "JsonRPCAction": {
-                    "method": "openUrl",
-                    "parameters": ['https://baike.baidu.com/'],
-                    "dontHideAfterAction": True
-                }
+                "IcoPath": "Images/app.ico"
             })
         else:
             url = 'https://baike.baidu.com/search/word?word=' + key
@@ -40,37 +35,38 @@ class Main(Wox):
                 # 直接return结果即可
                 description = soup.find_all(attrs={'name': 'description'})[0]['content']
                 # description获取了页面下的概述字符串
-                results.append({
-                    "Title": key + '_百度百科',
-                    "SubTitle": description,
-                    "IcoPath": "Images/app.ico",
-                    "JsonRPCAction": {
-                        "method": "openUrl",
-                        "parameters": [url],
-                        "dontHideAfterAction": True
-                    }
-                })
+                self.appendResult(results, key + '_百度百科', description, url)
             else:
                 for i in soup.select(".search-list dd"):
                     title = i.contents[1].text
                     subtitle = i.contents[3].text
                     url = i.contents[1]['href']
-                    results.append({
-                        "Title": title,
-                        "SubTitle": subtitle,
-                        "IcoPath": "Images/app.ico",
-                        "JsonRPCAction": {
-                            "method": "openUrl",
-                            "parameters": [url],
-                            "dontHideAfterAction": True
-                        }
-                    })
+                    self.appendResult(results, title, subtitle, url)
+                if not len(results):
+                    self.appendResult(results, '找不到结果', '未能找到' + key + '的相关信息，请重新输入', None)
         return results
 
     def openUrl(self, url):
         webbrowser.open(url)
 
-    # 以下代码是必须的
+    def appendResult(self, res, title, subtitle, url):
+        """
+        用于向result中添加项目
+        :param res: 待添加的result列表
+        :param title: 标题
+        :param subtitle: 副标题
+        :param url:指向的网页
+        """
+        res.append({
+            "Title": title,
+            "SubTitle": subtitle,
+            "IcoPath": "Images/app.ico",
+            "JsonRPCAction": {
+                "method": "openUrl",
+                "parameters": [url],
+                "dontHideAfterAction": True
+            }
+        })
 
 
 if __name__ == "__main__":
