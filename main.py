@@ -14,16 +14,13 @@ class Main(Wox):
 
     # 必须有一个query方法，用户执行查询的时候会自动调用query方法
     def query(self, key):
-        results = []
+        self.key = key
+        self.results = []
         self.session = requests.session()
         self.session.headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (' \
                                              'KHTML, like Gecko) Chrome/34.0.1847.131 Safari/537.36 '
         if not key:
-            results.append({
-                "Title": '请输入关键字',
-                "SubTitle": '百度一下，你就知道',
-                "IcoPath": "Images/app.ico"
-            })
+            self.appendResult('请输入关键字', '百度一下，你就知道')
         else:
             url = 'https://baike.baidu.com/search/word?word=' + key
             res = self.request(url)
@@ -35,29 +32,51 @@ class Main(Wox):
                 # 直接return结果即可
                 description = soup.find_all(attrs={'name': 'description'})[0]['content']
                 # description获取了页面下的概述字符串
-                self.appendResult(results, key + '_百度百科', description, url)
+                title = key
+                if soup.select('.polysemantList-wrapper li span'):
+                    title = title + '(' + soup.select('.polysemantList-wrapper li span')[0].text + ')'
+                self.appendResult(title, description, url)
+                multiple = soup.select('.polysemantList-wrapper')
+                if len(multiple):
+                    items = soup.select('.polysemantList-wrapper li a')
+                    for index in range(len(items)):
+                        url = 'https://baike.baidu.com' + items[index].attrs['href']
+                        title, subtitle = self.getDescription(url)
+                        self.appendResult(title, subtitle, url)
             else:
                 for i in soup.select(".search-list dd"):
-                    title = i.contents[1].text
+                    title = i.contents[1].text[:-5]
                     subtitle = i.contents[3].text
                     url = i.contents[1]['href']
-                    self.appendResult(results, title, subtitle, url)
-                if not len(results):
-                    self.appendResult(results, '找不到结果', '未能找到' + key + '的相关信息，请重新输入', None)
-        return results
+                    self.appendResult(title, subtitle, url)
+                if not len(self.results):
+                    self.appendResult('找不到结果', '未能找到' + key + '的相关信息，请重新输入')
+        return self.results
+
+    def getDescription(self, url):
+        """
+        输入百度百科的url，根据DOM元素分析标题和描述
+        :param url: 百度百科的url
+        :return: tuple(title, subtitle)
+        """
+        res = self.request(url)
+        res.encoding = 'utf-8'
+        soup = BeautifulSoup(res.text)
+        title = self.key + '(' + soup.select('.polysemantList-wrapper li span')[0].text + ')'
+        subtitle = soup.find_all(attrs={'name': 'description'})[0]['content']
+        return title, subtitle
 
     def openUrl(self, url):
         webbrowser.open(url)
 
-    def appendResult(self, res, title, subtitle, url):
+    def appendResult(self, title, subtitle, url=None):
         """
         用于向result中添加项目
-        :param res: 待添加的result列表
         :param title: 标题
         :param subtitle: 副标题
         :param url:指向的网页
         """
-        res.append({
+        self.results.append({
             "Title": title,
             "SubTitle": subtitle,
             "IcoPath": "Images/app.ico",
