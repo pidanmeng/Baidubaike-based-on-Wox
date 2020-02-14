@@ -9,7 +9,11 @@ wox插件，用于搜索百度百科
 1. 使用快捷键呼出Wox
 2. 输入指令：wiki  [keyword]
 3. 回车直接进入百度百科页面
+
 单条结果：
-![Snipaste_2020-02-14_21-42-20.png](https://www.z4a.net/images/2020/02/14/Snipaste_2020-02-14_21-42-20.png)
+
+![Snipaste_2020-02-14_21-42-20.png](www.z4a.net/images/2020/02/14/Snipaste_2020-02-14_21-42-20.png)
+
 多条结果：
-![Snipaste_2020-02-14_21-46-08.png](https://www.z4a.net/images/2020/02/14/Snipaste_2020-02-14_21-46-08.png)
+
+![Snipaste_2020-02-14_21-46-08.png](http://qiniu.supner.com/o_1e11vrmih1dfu190i1gh110tj1hqia.png)
